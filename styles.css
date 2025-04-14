@@ -1,0 +1,25 @@
+@import url(modern-normalize.css);
+
+:root {
+  line-height: 1.5;
+  font-size: clamp(1rem, 0.75rem + 1.5vw, 1.5rem);
+}
+
+* {
+  margin: 0;
+}
+
+ol[role="list"], ul[role="list"] {
+  list-style: none;
+  padding-inline: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+}
