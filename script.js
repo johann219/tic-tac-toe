@@ -17,3 +17,11 @@ const createPlayer = (name, symbol) => {
 
     return { playerName, playerSymbol };
 };
+
+const move = prompt('player1, enter your move (2 digits separated by space): ');
+
+const createMove = (moveStr) => {
+    const row = moveStr.split(' ').at(0);
+    const column = moveStr.split(' ').at(1);
+    return { row, column };
+};
