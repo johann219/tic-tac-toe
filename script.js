@@ -15,8 +15,8 @@ const GameBoard = (() => {
         }
         console.log(`Current board:\n${state[0]}\n${state[1]}\n${state[2]}`);
     };
-
-    return { state, changeState };
+    
+    return { changeState };
 })();
 
 const Game = (() => {
@@ -41,6 +41,7 @@ const Game = (() => {
 
         while (gameOngoing) {
             console.log(`Turn ${currentTurn}`);
+            ++currentTurn;
             console.log(`${currentPlayer.playerName} moves!`);
 
             const move = askPlayerForMove(currentPlayer);
@@ -50,8 +51,8 @@ const Game = (() => {
                 // declare winner
             // check for draw
                 // declare draw
-            // change current player
-
+            currentPlayer = currentPlayer === player1 ? player2 : player1;
+            
             console.log(currentPlayer === player1);
         }
     };
