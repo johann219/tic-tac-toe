@@ -11,9 +11,9 @@ const GameBoard = (() => {
     return { state, changeState };
 })();
 
-GameBoard.changeState({row: 1, column: 2}, 'x');
-GameBoard.changeState({row: 3, column: 1}, 'o');
-GameBoard.changeState({row: 3, column: 3}, 'x');
-GameBoard.changeState({row: 2, column: 1}, 'o');
-GameBoard.changeState({row: 1, column: 1}, 'x');
-GameBoard.changeState({row: 1, column: 2}, 'o');
+const createPlayer = (name, symbol) => {
+    const playerName = name;
+    const playerSymbol = symbol;
+
+    return { playerName, playerSymbol };
+};
