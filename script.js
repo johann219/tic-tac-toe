@@ -72,7 +72,28 @@ const GameBoard = (() => {
         return winningCombinations;
     };
 
-    return { changeState };
+    const winningCombinations = createWinningCombinations (3);
+
+    const checkForWin = () => winningCombinations.some((winLineCoordinates) => {
+                const winCellFirstRowCoordinate = winLineCoordinates[0][0];
+                const winCellFirstColumnCoordinate = winLineCoordinates[0][1];
+
+                const winCellFirstValue = state[winCellFirstRowCoordinate][winCellFirstColumnCoordinate];
+
+                if (winCellFirstValue !== null) {
+                    return winLineCoordinates.every((winCellCoordinates) => {
+                        const cellToCompareRowCoordinate = winCellCoordinates[0];
+                        const cellToCompareColumnCoordinate = winCellCoordinates[1];
+                        
+                        const cellToCompareValue = state[cellToCompareRowCoordinate][cellToCompareColumnCoordinate];
+
+                        return winCellFirstValue === cellToCompareValue;
+                    });
+                }
+                return false;
+        });
+
+    return { changeState, checkForWin };
 })();
 
 const Game = (() => {
