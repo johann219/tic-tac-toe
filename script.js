@@ -7,13 +7,18 @@ const createPlayer = (name, symbol) => {
 
 
 const GameBoard = (() => {
-    const state = [[null, null, null], [null, null, null], [null, null, null]];
+    let state = [];
+    let winningCombinations = [];
 
-    const changeState = (move, symbol) => {
-        if (state[move.row - 1][move.column - 1] === null) {
-            state[move.row - 1][move.column - 1] = symbol;
+    const createBoard = (gridSize) => {
+        for (let i = 0; i < gridSize; i++) {
+            const boardRow = [];
+            for (let j = 0; j < gridSize; j++) {
+                boardRow.push(null);
+            }
+            state.push(boardRow);
         }
-        console.log(`Current board:\n${state[0]}\n${state[1]}\n${state[2]}`);
+        console.log(state);
     };
 
     const createWinningRows = (gridSize) => {
@@ -43,7 +48,7 @@ const GameBoard = (() => {
         return winningColumns;
     };
     
-    const createUpdwardDiagonal = (gridSize) => {
+    const createUpdwardWinningDiagonal = (gridSize) => {
         const winningUpwardDiagonal = [];
         for (i = 0; i < gridSize; i++) {
             const diagonalCell = [i, gridSize - 1 - i];
@@ -52,7 +57,7 @@ const GameBoard = (() => {
         return winningUpwardDiagonal;
     };
     
-    const createDownwardDiagonal = (gridSize) => {
+    const createDownwardWinningDiagonal = (gridSize) => {
         const winningDownwardDiagonal = [];
         for (i = 0; i < gridSize; i++) {
             const diagonalCell = [i, i];
@@ -62,17 +67,19 @@ const GameBoard = (() => {
     };
     
     const createWinningCombinations = (gridSize) => {
-        const winningCombinations = [];
-        
         createWinningRows(gridSize).forEach((row) => winningCombinations.push(row));
         createWinningColumns(gridSize).forEach((column) => winningCombinations.push(column));
-        winningCombinations.push(createDownwardDiagonal(gridSize));
-        winningCombinations.push(createUpdwardDiagonal(gridSize));
-    
-        return winningCombinations;
+        winningCombinations.push(createDownwardWinningDiagonal(gridSize));
+        winningCombinations.push(createUpdwardWinningDiagonal(gridSize));
+        console.log(winningCombinations);
     };
 
-    const winningCombinations = createWinningCombinations (3);
+    const changeState = (move, symbol) => {
+        if (state[move.row - 1][move.column - 1] === null) {
+            state[move.row - 1][move.column - 1] = symbol;
+        }
+        console.log(`Current board:\n${state[0]}\n${state[1]}\n${state[2]}`);
+    };
 
     const checkForWin = () => winningCombinations.some((winLineCoordinates) => {
                 const winCellFirstRowCoordinate = winLineCoordinates[0][0];
@@ -93,7 +100,7 @@ const GameBoard = (() => {
                 return false;
         });
 
-    return { changeState, checkForWin };
+    return { createBoard, createWinningCombinations, changeState, checkForWin };
 })();
 
 const Game = (() => {
@@ -111,6 +118,11 @@ const Game = (() => {
 
     const startGame = () => {
         console.log(`Game starts! ${player1.playerName} is playing as ${player1.playerSymbol} against ${player2.playerName} who is playing as ${player2.playerSymbol}`);
+
+        const gridSize = prompt('Enter desirable grid size: ');
+
+        GameBoard.createBoard(gridSize);
+        GameBoard.createWinningCombinations(gridSize);
 
         gameOngoing = true;
         let currentPlayer = player1;
