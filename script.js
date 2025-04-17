@@ -18,7 +18,6 @@ const GameBoard = (() => {
             }
             state.push(boardRow);
         }
-        console.log(state);
     };
 
     const createWinningRows = (gridSize) => {
@@ -71,7 +70,6 @@ const GameBoard = (() => {
         createWinningColumns(gridSize).forEach((column) => winningCombinations.push(column));
         winningCombinations.push(createDownwardWinningDiagonal(gridSize));
         winningCombinations.push(createUpdwardWinningDiagonal(gridSize));
-        console.log(winningCombinations);
     };
 
     const changeState = (move, symbol) => {
@@ -82,24 +80,24 @@ const GameBoard = (() => {
     };
 
     const checkForWin = () => winningCombinations.some((winLineCoordinates) => {
-                const winCellFirstRowCoordinate = winLineCoordinates[0][0];
-                const winCellFirstColumnCoordinate = winLineCoordinates[0][1];
+        const winCellFirstRowCoordinate = winLineCoordinates[0][0];
+        const winCellFirstColumnCoordinate = winLineCoordinates[0][1];
 
-                const winCellFirstValue = state[winCellFirstRowCoordinate][winCellFirstColumnCoordinate];
+        const winCellFirstValue = state[winCellFirstRowCoordinate][winCellFirstColumnCoordinate];
 
-                if (winCellFirstValue !== null) {
-                    return winLineCoordinates.every((winCellCoordinates) => {
-                        const cellToCompareRowCoordinate = winCellCoordinates[0];
-                        const cellToCompareColumnCoordinate = winCellCoordinates[1];
+        if (winCellFirstValue !== null) {
+            return winLineCoordinates.every((winCellCoordinates) => {
+                const cellToCompareRowCoordinate = winCellCoordinates[0];
+                const cellToCompareColumnCoordinate = winCellCoordinates[1];
                         
-                        const cellToCompareValue = state[cellToCompareRowCoordinate][cellToCompareColumnCoordinate];
+                const cellToCompareValue = state[cellToCompareRowCoordinate][cellToCompareColumnCoordinate];
 
-                        return winCellFirstValue === cellToCompareValue;
-                    });
-                }
-                return false;
-        });
-
+                return winCellFirstValue === cellToCompareValue;
+            });
+        }
+        return false;
+    });
+    
     return { createBoard, createWinningCombinations, changeState, checkForWin };
 })();
 
@@ -118,31 +116,42 @@ const Game = (() => {
 
     const startGame = () => {
         console.log(`Game starts! ${player1.playerName} is playing as ${player1.playerSymbol} against ${player2.playerName} who is playing as ${player2.playerSymbol}`);
-
+        
+        gameOngoing = true;
+        
         const gridSize = prompt('Enter desirable grid size: ');
 
         GameBoard.createBoard(gridSize);
         GameBoard.createWinningCombinations(gridSize);
 
-        gameOngoing = true;
+
+        const turnLimit = Math.pow(gridSize, 2);
+
         let currentPlayer = player1;
         let currentTurn = 1;
 
         while (gameOngoing) {
             console.log(`Turn ${currentTurn}`);
-            ++currentTurn;
             console.log(`${currentPlayer.playerName} moves!`);
 
             const move = askPlayerForMove(currentPlayer);
             GameBoard.changeState(move, currentPlayer.playerSymbol);
 
-            // check for win
-                // declare winner
-            // check for draw
-                // declare draw
-            currentPlayer = currentPlayer === player1 ? player2 : player1;
+            if (GameBoard.checkForWin()) {
+                console.log(`${currentPlayer.playerName} wins!`);
+                gameOngoing = false;
+                break;
+            }
+
+            if (currentTurn === turnLimit) {
+                console.log('It is a draw!');
+                gameOngoing = false;
+                break;
+            } else {
+                ++currentTurn;
+            }
             
-            console.log(currentPlayer === player1);
+            currentPlayer = currentPlayer === player1 ? player2 : player1;
         }
     };
 
