@@ -97,7 +97,7 @@ const GameBoard = (() => {
         }
         return false;
     });
-    
+
     return { createBoard, createWinningCombinations, changeState, checkForWin };
 })();
 
@@ -150,12 +150,10 @@ const Game = (() => {
             } else {
                 ++currentTurn;
             }
-            
+
             currentPlayer = currentPlayer === player1 ? player2 : player1;
         }
     };
 
     return { startGame };
 })();
-
-Game.startGame();

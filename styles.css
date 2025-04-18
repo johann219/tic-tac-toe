@@ -23,3 +23,41 @@ img, picture, video, canvas, svg {
     display: block;
     max-width: 100%;
 }
+
+:root {
+  --off-white: #F8F8F8;
+  --soft-gray: #D0D0D0;
+  --dark-gray: #3A3A3A;
+  --charcoal-gray: #4A4A4A;
+  --distinct-gray: #686868;
+  --blue-gray: #A0B0B8;
+  --blue-gray-soft: #B0BCC7;
+  --blue-gray-slate: #78909C;
+  --blue-desaturated: #4A6D88;
+  --blue-teal: #64A0B5;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+header,
+footer {
+  text-align: center;
+  background-color: var(--blue-teal);
+  color: var(--dark-gray);
+}
