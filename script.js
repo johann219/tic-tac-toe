@@ -157,3 +157,25 @@ const Game = (() => {
 
     return { startGame };
 })();
+
+const renderBoard = (gridSize) => {
+    const board = new DocumentFragment();
+    const cellCount = Math.pow(gridSize, 2);
+    const gameboardWrapperElement = document.querySelector('.gameboard-wrapper');
+    
+    for (let i = 0; i < cellCount; i++) {
+        const newCell = document.createElement('div');
+        newCell.classList.add('gameboard-cell');
+        board.append(newCell);
+    }
+
+    gameboardWrapperElement.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+    
+    gameboardWrapperElement.append(board);
+
+    const gap = 0.1 * document.querySelector('.gameboard-cell').offsetWidth;
+
+    gameboardWrapperElement.style.gap = `${gap}px`;
+};
+
+renderBoard(10);
