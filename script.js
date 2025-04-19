@@ -160,7 +160,6 @@ const Game = (() => {
 
 const renderBoard = (gridSize) => {
     const board = new DocumentFragment();
-    const cellCount = Math.pow(gridSize, 2);
     const gameboardWrapperElement = document.querySelector('.gameboard-wrapper');
     
     for (let i = 1; i <= gridSize; i++) {
@@ -184,3 +183,14 @@ const renderBoard = (gridSize) => {
 };
 
 renderBoard(3);
+
+const cells = document.querySelectorAll('.gameboard-cell');
+
+cells.forEach((cell) => {
+    cell.addEventListener('click', (e) => {
+        const cellRow = e.target.getAttribute('data-row');
+        const cellColumn = e.target.getAttribute('data-column');
+        
+        console.log(`Cell coordinates: {${cellRow}, ${cellColumn}}`);
+    });
+});
