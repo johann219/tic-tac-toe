@@ -163,10 +163,15 @@ const renderBoard = (gridSize) => {
     const cellCount = Math.pow(gridSize, 2);
     const gameboardWrapperElement = document.querySelector('.gameboard-wrapper');
     
-    for (let i = 0; i < cellCount; i++) {
-        const newCell = document.createElement('div');
-        newCell.classList.add('gameboard-cell');
-        board.append(newCell);
+    for (let i = 1; i <= gridSize; i++) {
+        for (let j = 1; j <= gridSize; j++){
+            const newCell = document.createElement('div');
+            newCell.classList.add('gameboard-cell');
+            newCell.setAttribute('data-row', i);
+            newCell.setAttribute('data-column', j);
+            
+            board.append(newCell);
+        }
     }
 
     gameboardWrapperElement.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
@@ -178,4 +183,4 @@ const renderBoard = (gridSize) => {
     gameboardWrapperElement.style.gap = `${gap}px`;
 };
 
-renderBoard(10);
+renderBoard(3);
