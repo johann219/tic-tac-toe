@@ -98,7 +98,44 @@ const GameBoard = (() => {
         return false;
     });
 
-    return { createBoard, createWinningCombinations, changeState, checkForWin };
+    const renderBoard = (gridSize) => {
+        const board = new DocumentFragment();
+        const gameboardWrapperElement = document.querySelector('.gameboard-wrapper');
+        
+        for (let i = 1; i <= gridSize; i++) {
+            for (let j = 1; j <= gridSize; j++){
+                const newCell = document.createElement('div');
+                newCell.classList.add('gameboard-cell');
+                newCell.setAttribute('data-row', i);
+                newCell.setAttribute('data-column', j);
+                
+                board.append(newCell);
+            }
+        }
+    
+        gameboardWrapperElement.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+        
+        gameboardWrapperElement.append(board);
+    
+        const gap = 0.1 * document.querySelector('.gameboard-cell').offsetWidth;
+    
+        gameboardWrapperElement.style.gap = `${gap}px`;
+    };
+
+    const addCellsClickListeners = () => {
+        const cells = document.querySelectorAll('.gameboard-cell');
+    
+        cells.forEach((cell) => {
+            cell.addEventListener('click', (e) => {
+                const cellRow = e.target.getAttribute('data-row');
+                const cellColumn = e.target.getAttribute('data-column');
+                
+                console.log(`Cell coordinates: {${cellRow}, ${cellColumn}}`);
+            });
+        });
+    };
+
+    return { createBoard, renderBoard, addCellsClickListeners, createWinningCombinations, changeState, checkForWin };
 })();
 
 const Game = (() => {
@@ -122,8 +159,9 @@ const Game = (() => {
         const gridSize = prompt('Enter desirable grid size: ');
 
         GameBoard.createBoard(gridSize);
+        GameBoard.renderBoard(gridSize);
         GameBoard.createWinningCombinations(gridSize);
-
+        GameBoard.addCellsClickListeners();
 
         const turnLimit = Math.pow(gridSize, 2);
 
@@ -134,8 +172,8 @@ const Game = (() => {
             console.log(`Turn ${currentTurn}`);
             console.log(`${currentPlayer.playerName} moves!`);
 
-            const move = askPlayerForMove(currentPlayer);
-            GameBoard.changeState(move, currentPlayer.playerSymbol);
+            //const move = askPlayerForMove(currentPlayer);
+            //GameBoard.changeState(move, currentPlayer.playerSymbol);
 
             if (GameBoard.checkForWin()) {
                 console.log(`${currentPlayer.playerName} wins!`);
@@ -158,39 +196,5 @@ const Game = (() => {
     return { startGame };
 })();
 
-const renderBoard = (gridSize) => {
-    const board = new DocumentFragment();
-    const gameboardWrapperElement = document.querySelector('.gameboard-wrapper');
-    
-    for (let i = 1; i <= gridSize; i++) {
-        for (let j = 1; j <= gridSize; j++){
-            const newCell = document.createElement('div');
-            newCell.classList.add('gameboard-cell');
-            newCell.setAttribute('data-row', i);
-            newCell.setAttribute('data-column', j);
-            
-            board.append(newCell);
-        }
-    }
+Game.startGame();
 
-    gameboardWrapperElement.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-    
-    gameboardWrapperElement.append(board);
-
-    const gap = 0.1 * document.querySelector('.gameboard-cell').offsetWidth;
-
-    gameboardWrapperElement.style.gap = `${gap}px`;
-};
-
-renderBoard(3);
-
-const cells = document.querySelectorAll('.gameboard-cell');
-
-cells.forEach((cell) => {
-    cell.addEventListener('click', (e) => {
-        const cellRow = e.target.getAttribute('data-row');
-        const cellColumn = e.target.getAttribute('data-column');
-        
-        console.log(`Cell coordinates: {${cellRow}, ${cellColumn}}`);
-    });
-});
