@@ -6,16 +6,22 @@ const createPlayer = (name, symbol) => {
 };
 
 
-const GameBoard = (() => {
+const Gameboard = (() => {
     let state = [];
     let winningCombinations = [];
-
-    const deleteGameboardState = () => state.length = 0;
     
+    const deleteCells = () => {
+        // delete cells data
+        state.length = 0;
+        
+        // delete cells render
+        const gameboardCells = document.querySelectorAll('.gameboard-cell');
+        gameboardCells.forEach((cell) => cell.remove());
+    };
+
     const deleteWinningCombinations = () => winningCombinations.length = 0;
 
-    const createBoard = (gridSize) => {
-        deleteGameboardState();
+    const createEmptyCellsData = (gridSize) => {
         for (let i = 0; i < gridSize; i++) {
             const boardRow = [];
             for (let j = 0; j < gridSize; j++) {
@@ -71,14 +77,13 @@ const GameBoard = (() => {
     };
     
     const createWinningCombinations = (gridSize) => {
-        deleteWinningCombinations();
         createWinningRows(gridSize).forEach((row) => winningCombinations.push(row));
         createWinningColumns(gridSize).forEach((column) => winningCombinations.push(column));
         winningCombinations.push(createDownwardWinningDiagonal(gridSize));
         winningCombinations.push(createUpdwardWinningDiagonal(gridSize));
     };
 
-    const changeState = (move, symbol) => state[move.row - 1][move.column - 1] = symbol;
+    const makeMove = (move, symbol) => state[move.moveRow - 1][move.moveColumn - 1] = symbol;
 
     const checkForWin = () => winningCombinations.some((winLineCoordinates) => {
         const winCellFirstRowCoordinate = winLineCoordinates[0][0];
@@ -99,13 +104,7 @@ const GameBoard = (() => {
         return false;
     });
 
-    const deleteCells = () => {
-        const gameboardCells = document.querySelectorAll('.gameboard-cell');
-        gameboardCells.forEach((cell) => cell.remove());
-    };
-
     const renderBoard = (gridSize) => {
-        deleteCells();
         const board = new DocumentFragment();
         const gameboardWrapperElement = document.querySelector('.gameboard-wrapper');
         
@@ -130,11 +129,20 @@ const GameBoard = (() => {
         gameboardWrapperElement.style.gap = `${gap}px`;
     };
 
+    const createBoard = (gridSize) => {
+        deleteCells();
+        createEmptyCellsData(gridSize);
+        renderBoard(gridSize);
+
+        deleteWinningCombinations();
+        createWinningCombinations(gridSize);
+    };
+
     const getState = () => state;
 
     const getWinningCombinations = () => winningCombinations;
 
-    return { getState, getWinningCombinations, createBoard, renderBoard, createWinningCombinations, changeState, checkForWin };
+    return { getState, getWinningCombinations, createBoard, makeMove, checkForWin };
 })();
 
 const Game = (() => {
@@ -154,22 +162,24 @@ const Game = (() => {
         let currentPlayer = player1;
         let currentTurn = 1;
 
+        const getPlayerMove = (targetCell) => {
+            const moveRow = targetCell.getAttribute('data-row');
+            const moveColumn = targetCell.getAttribute('data-column');
+
+            return { moveRow, moveColumn };
+        };
+
         const addCellsClickListeners = () => {
             const cells = document.querySelectorAll('.gameboard-cell');
         
             cells.forEach((cell) => {
-                cell.addEventListener('click', (e) => {
-                    if(gameOngoing && e.target.getAttribute('data-checked') === 'null') {
-                        e.target.setAttribute('data-checked', currentPlayer.playerSymbol);
-                        
-                        const move = {
-                            row: e.target.getAttribute('data-row'),
-                            column: e.target.getAttribute('data-column'),
-                        };
+                cell.addEventListener('click', () => {
+                    if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
+                        cell.setAttribute('data-checked', currentPlayer.playerSymbol);
 
-                        GameBoard.changeState(move, currentPlayer.playerSymbol);
+                        Gameboard.makeMove(getPlayerMove(cell), currentPlayer.playerSymbol);
 
-                        if (GameBoard.checkForWin()) {
+                        if (Gameboard.checkForWin()) {
                             console.log(`${currentPlayer.playerName} wins!`);
                             gameOngoing = false;
                         }
@@ -187,9 +197,7 @@ const Game = (() => {
             });
         };
 
-        GameBoard.createBoard(gridSize);
-        GameBoard.renderBoard(gridSize);
-        GameBoard.createWinningCombinations(gridSize);
+        Gameboard.createBoard(gridSize);
         addCellsClickListeners();
 
         const createGridSizeSelector = () => {
@@ -197,14 +205,11 @@ const Game = (() => {
 
             gridSizeSelectElement.addEventListener('change', () => {
                 gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
-                GameBoard.createBoard(gridSize);
-                GameBoard.renderBoard(gridSize);
+                Gameboard.createBoard(gridSize);
                 addCellsClickListeners();
                 turnLimit = Math.pow(gridSize, 2);
-                GameBoard.createWinningCombinations(gridSize);
             });
         };
-
         createGridSizeSelector();
     };
 
