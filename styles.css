@@ -85,3 +85,11 @@ main {
   display: grid;
   background-color: var(--blue-dusty);
 }
+
+.gameboard-cell[data-checked="x"] {
+  background-color: black;
+}
+
+.gameboard-cell[data-checked="o"] {
+  background-color: white;
+}

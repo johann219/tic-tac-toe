@@ -72,12 +72,7 @@ const GameBoard = (() => {
         winningCombinations.push(createUpdwardWinningDiagonal(gridSize));
     };
 
-    const changeState = (move, symbol) => {
-        if (state[move.row - 1][move.column - 1] === null) {
-            state[move.row - 1][move.column - 1] = symbol;
-        }
-        console.log(`Current board:\n${state[0]}\n${state[1]}\n${state[2]}`);
-    };
+    const changeState = (move, symbol) => state[move.row - 1][move.column - 1] = symbol;
 
     const checkForWin = () => winningCombinations.some((winLineCoordinates) => {
         const winCellFirstRowCoordinate = winLineCoordinates[0][0];
@@ -108,6 +103,8 @@ const GameBoard = (() => {
                 newCell.classList.add('gameboard-cell');
                 newCell.setAttribute('data-row', i);
                 newCell.setAttribute('data-column', j);
+                newCell.setAttribute('data-checked', null);
+                
                 
                 board.append(newCell);
             }
@@ -122,20 +119,7 @@ const GameBoard = (() => {
         gameboardWrapperElement.style.gap = `${gap}px`;
     };
 
-    const addCellsClickListeners = () => {
-        const cells = document.querySelectorAll('.gameboard-cell');
-    
-        cells.forEach((cell) => {
-            cell.addEventListener('click', (e) => {
-                const cellRow = e.target.getAttribute('data-row');
-                const cellColumn = e.target.getAttribute('data-column');
-                
-                console.log(`Cell coordinates: {${cellRow}, ${cellColumn}}`);
-            });
-        });
-    };
-
-    return { createBoard, renderBoard, addCellsClickListeners, createWinningCombinations, changeState, checkForWin };
+    return { createBoard, renderBoard, createWinningCombinations, changeState, checkForWin };
 })();
 
 const Game = (() => {
@@ -161,36 +145,49 @@ const Game = (() => {
         GameBoard.createBoard(gridSize);
         GameBoard.renderBoard(gridSize);
         GameBoard.createWinningCombinations(gridSize);
-        GameBoard.addCellsClickListeners();
 
         const turnLimit = Math.pow(gridSize, 2);
 
         let currentPlayer = player1;
         let currentTurn = 1;
+        
+        const addCellsClickListeners = () => {
+            const cells = document.querySelectorAll('.gameboard-cell');
+        
+            cells.forEach((cell) => {
+                cell.addEventListener('click', (e) => {
+                    if(gameOngoing && e.target.getAttribute('data-checked') === 'null') {
+                        console.log(`Turn ${currentTurn}`);
+                        console.log(`${currentPlayer.playerName} moves!`);
+                        
+                        e.target.setAttribute('data-checked', currentPlayer.playerSymbol);
+                        
+                        const move = {
+                            row: e.target.getAttribute('data-row'),
+                            column: e.target.getAttribute('data-column'),
+                        };
 
-        while (gameOngoing) {
-            console.log(`Turn ${currentTurn}`);
-            console.log(`${currentPlayer.playerName} moves!`);
+                        GameBoard.changeState(move, currentPlayer.playerSymbol);
 
-            //const move = askPlayerForMove(currentPlayer);
-            //GameBoard.changeState(move, currentPlayer.playerSymbol);
+                        if (GameBoard.checkForWin()) {
+                            console.log(`${currentPlayer.playerName} wins!`);
+                            gameOngoing = false;
+                        }
+            
+                        if (currentTurn === turnLimit) {
+                            console.log('It is a draw!');
+                            gameOngoing = false;
+                        } else {
+                            ++currentTurn;
+                        }
+            
+                        currentPlayer = currentPlayer === player1 ? player2 : player1;
+                    }
+                });
+            });
+        };
 
-            if (GameBoard.checkForWin()) {
-                console.log(`${currentPlayer.playerName} wins!`);
-                gameOngoing = false;
-                break;
-            }
-
-            if (currentTurn === turnLimit) {
-                console.log('It is a draw!');
-                gameOngoing = false;
-                break;
-            } else {
-                ++currentTurn;
-            }
-
-            currentPlayer = currentPlayer === player1 ? player2 : player1;
-        }
+        addCellsClickListeners();
     };
 
     return { startGame };
