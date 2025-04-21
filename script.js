@@ -151,6 +151,9 @@ const Game = (() => {
 
     let gameOngoing = false;
 
+    const gridSizeSelectElement = document.querySelector('#gridsize-select');
+    const restartBtnElement = document.querySelector('.restart-button');
+
     const startGame = () => {
         console.log(`Game starts! ${player1.playerName} is playing as ${player1.playerSymbol} against ${player2.playerName} who is playing as ${player2.playerSymbol}`);
         
@@ -201,8 +204,6 @@ const Game = (() => {
         addCellsClickListeners();
 
         const createGridSizeSelector = () => {
-            const gridSizeSelectElement = document.querySelector('#grid-size');
-
             gridSizeSelectElement.addEventListener('change', () => {
                 gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
                 Gameboard.createBoard(gridSize);
@@ -212,6 +213,14 @@ const Game = (() => {
         };
         createGridSizeSelector();
     };
+
+    restartBtnElement.addEventListener('click', () => {
+        gameOngoing = false;
+        
+        Gameboard.createBoard(gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value);
+        
+        startGame();
+    });
 
     return { startGame };
 })();
