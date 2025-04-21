@@ -10,7 +10,12 @@ const GameBoard = (() => {
     let state = [];
     let winningCombinations = [];
 
+    const deleteGameboardState = () => state.length = 0;
+    
+    const deleteWinningCombinations = () => winningCombinations.length = 0;
+
     const createBoard = (gridSize) => {
+        deleteGameboardState();
         for (let i = 0; i < gridSize; i++) {
             const boardRow = [];
             for (let j = 0; j < gridSize; j++) {
@@ -66,6 +71,7 @@ const GameBoard = (() => {
     };
     
     const createWinningCombinations = (gridSize) => {
+        deleteWinningCombinations();
         createWinningRows(gridSize).forEach((row) => winningCombinations.push(row));
         createWinningColumns(gridSize).forEach((column) => winningCombinations.push(column));
         winningCombinations.push(createDownwardWinningDiagonal(gridSize));
@@ -93,7 +99,13 @@ const GameBoard = (() => {
         return false;
     });
 
+    const deleteCells = () => {
+        const gameboardCells = document.querySelectorAll('.gameboard-cell');
+        gameboardCells.forEach((cell) => cell.remove());
+    };
+
     const renderBoard = (gridSize) => {
+        deleteCells();
         const board = new DocumentFragment();
         const gameboardWrapperElement = document.querySelector('.gameboard-wrapper');
         
@@ -104,7 +116,6 @@ const GameBoard = (() => {
                 newCell.setAttribute('data-row', i);
                 newCell.setAttribute('data-column', j);
                 newCell.setAttribute('data-checked', null);
-                
                 
                 board.append(newCell);
             }
@@ -119,7 +130,11 @@ const GameBoard = (() => {
         gameboardWrapperElement.style.gap = `${gap}px`;
     };
 
-    return { createBoard, renderBoard, createWinningCombinations, changeState, checkForWin };
+    const getState = () => state;
+
+    const getWinningCombinations = () => winningCombinations;
+
+    return { getState, getWinningCombinations, createBoard, renderBoard, createWinningCombinations, changeState, checkForWin };
 })();
 
 const Game = (() => {
@@ -128,38 +143,23 @@ const Game = (() => {
 
     let gameOngoing = false;
 
-    const askPlayerForMove = (player) => {
-        const moveStr = prompt(`${player.playerName}, enter your move (2 digits separated by space): `);
-        const row = moveStr.split(' ').at(0);
-        const column = moveStr.split(' ').at(1);
-        return { row, column };
-    }; 
-
     const startGame = () => {
         console.log(`Game starts! ${player1.playerName} is playing as ${player1.playerSymbol} against ${player2.playerName} who is playing as ${player2.playerSymbol}`);
         
         gameOngoing = true;
         
-        const gridSize = prompt('Enter desirable grid size: ');
-
-        GameBoard.createBoard(gridSize);
-        GameBoard.renderBoard(gridSize);
-        GameBoard.createWinningCombinations(gridSize);
-
-        const turnLimit = Math.pow(gridSize, 2);
+        let gridSize = 3;
+        let turnLimit = Math.pow(gridSize, 2);
 
         let currentPlayer = player1;
         let currentTurn = 1;
-        
+
         const addCellsClickListeners = () => {
             const cells = document.querySelectorAll('.gameboard-cell');
         
             cells.forEach((cell) => {
                 cell.addEventListener('click', (e) => {
                     if(gameOngoing && e.target.getAttribute('data-checked') === 'null') {
-                        console.log(`Turn ${currentTurn}`);
-                        console.log(`${currentPlayer.playerName} moves!`);
-                        
                         e.target.setAttribute('data-checked', currentPlayer.playerSymbol);
                         
                         const move = {
@@ -187,7 +187,25 @@ const Game = (() => {
             });
         };
 
+        GameBoard.createBoard(gridSize);
+        GameBoard.renderBoard(gridSize);
+        GameBoard.createWinningCombinations(gridSize);
         addCellsClickListeners();
+
+        const createGridSizeSelector = () => {
+            const gridSizeSelectElement = document.querySelector('#grid-size');
+
+            gridSizeSelectElement.addEventListener('change', () => {
+                gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
+                GameBoard.createBoard(gridSize);
+                GameBoard.renderBoard(gridSize);
+                addCellsClickListeners();
+                turnLimit = Math.pow(gridSize, 2);
+                GameBoard.createWinningCombinations(gridSize);
+            });
+        };
+
+        createGridSizeSelector();
     };
 
     return { startGame };
