@@ -13,7 +13,23 @@
     </header>
     <main>
         <section class="player-section">
-            <p>Player 1</p>
+            <form action="" class="player-info">
+                <h2>Player 1</h2>
+                <div class="form-row">
+                    <label for="player1-name">Enter your name:</label>
+                    <input type="text" id="player1-name">
+                </div>
+                <div class="form-row">
+                    <select name="player1-symbol-select" id="player1-symbol-select">
+                        <option value="x" selected>Black</option>
+                        <option value="o">White</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <input type="checkbox" id="player1-ready">
+                    <label for="player1-ready">Ready</label>
+                </div>
+            </form>
         </section>
         <section class="gameboard-section">
             <select name="gridsize-select" id="gridsize-select">
@@ -27,7 +43,23 @@
             <button class="restart-button">Restart</button>
         </section>
         <section class="player-section">
-            <p>Player 2</p>
+            <form action="" class="player-info">
+                <h2>Player 2</h2>
+                <div class="form-row">
+                    <label for="player2-name">Enter your name:</label>
+                    <input type="text" id="player2-name">
+                </div>
+                <div class="form-row">
+                    <select name="player2-symbol-select" id="player2-symbol-select">
+                        <option value="x">Black</option>
+                        <option value="o" selected>White</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <input type="checkbox" id="player2-ready">
+                    <label for="player2-ready">Ready</label>
+                </div>
+            </form>
         </section>
     </main>
     <footer>
