@@ -1,9 +1,18 @@
-const createPlayer = (name, symbol) => {
-    const playerName = name;
-    const playerSymbol = symbol;
+const Player = (() => {
+    const symbolSelectPlayer1 = document.querySelector('#player1-symbol-select');
+    const symbolSelectPlayer2 = document.querySelector('#player2-symbol-select');
 
-    return { playerName, playerSymbol };
-};
+    const onSymbolChange = (event) => {
+        const changedSelect = event.target;
+        
+        const otherSelect = changedSelect === symbolSelectPlayer1 ? symbolSelectPlayer2 : symbolSelectPlayer1;
+
+        otherSelect.selectedIndex = changedSelect.selectedIndex === 0 ? 1 : 0;
+    };
+    
+    symbolSelectPlayer1.addEventListener('change', onSymbolChange);
+    symbolSelectPlayer2.addEventListener('change', onSymbolChange);
+})();
 
 
 const Gameboard = (() => {
@@ -174,8 +183,8 @@ const Game = (() => {
         gameOngoing = true;
         
         const turnCounter = turnCounterFactory();
-
-        let gridSize = 3;
+        const gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
+        
         let turnLimit = Math.pow(gridSize, 2);
 
         let currentPlayer = player1;
@@ -230,25 +239,3 @@ const Game = (() => {
 })();
 
 Game.startGame();
-
-// const turnCounterFactory = () => {
-//     let turnCount = 1;
-//     return function () {
-//         return turnCount++;
-//     }
-// };
-
-// const clickerTest = () => {
-//     const turnLimit = 9;
-
-//     const turnCountAdder = turnCounterFactory();
-
-//     while (true) {
-//         console.log('turn');
-//         if(turnCountAdder() === turnLimit) {
-//             break;
-//         }
-//     }
-// };
-
-// clickerTest();
