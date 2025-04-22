@@ -1,3 +1,11 @@
+const Utilities = (() => {
+    const disableElement = (element) => element.setAttribute('disabled', '');
+    const enableElement = (element) => element.removeAttribute('disabled');
+    const randomIntFromInterval = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+    
+    return { disableElement, enableElement, randomIntFromInterval };
+})();
+
 const Gameboard = (() => {
     let state = [];
     let winningCombinations = [];
@@ -134,11 +142,7 @@ const Gameboard = (() => {
 
     const getWinningCombinations = () => winningCombinations;
 
-    const disableElement = (element) => element.setAttribute('disabled', '');
-
-    const enableElement = (element) => element.removeAttribute('disabled');
-
-    return { getState, getWinningCombinations, createBoard, makeMove, checkForWin, disableElement, enableElement};
+    return { getState, getWinningCombinations, createBoard, makeMove, checkForWin };
 })();
 
 const Players = (() => {
@@ -177,7 +181,7 @@ const Players = (() => {
         const changedNameInput = event.target;
         const readyCheck = changedNameInput === nameInputPlayer1 ? readyCheckPlayer1 : readyCheckPlayer2;
         
-        event.target.value !== '' ? Gameboard.enableElement(readyCheck) : Gameboard.enableElement(readyCheck);
+        event.target.value !== '' ? Utilities.enableElement(readyCheck) : Utilities.enableElement(readyCheck);
     };
     
     const onReadyCheckChange = (event) => {
@@ -189,14 +193,14 @@ const Players = (() => {
             player1 = createPlayer(nameInput.value, symbolSelect.options[symbolSelect.selectedIndex].value) :
             player2 = createPlayer(nameInput.value, symbolSelect.options[symbolSelect.selectedIndex].value);
 
-        Gameboard.disableElement(nameInput);
-        Gameboard.disableElement(symbolSelectPlayer1);
-        Gameboard.disableElement(symbolSelectPlayer2);
+        Utilities.disableElement(nameInput);
+        Utilities.disableElement(symbolSelectPlayer1);
+        Utilities.disableElement(symbolSelectPlayer2);
         
         if(readyCheckPlayer1.checked && readyCheckPlayer2.checked) {
-            Gameboard.enableElement(startBtn);
-            Gameboard.enableElement(restartBtn);
-            Gameboard.enableElement(gridsizeSelect);
+            Utilities.enableElement(startBtn);
+            Utilities.enableElement(restartBtn);
+            Utilities.enableElement(gridsizeSelect);
         }
     };
 
@@ -219,8 +223,9 @@ const Players = (() => {
 const Game = (() => {
     let gameOngoing = false;
 
-    const gridSizeSelectElement = document.querySelector('#gridsize-select');
-    const restartBtnElement = document.querySelector('.restart-button');
+    const startBtn = document.querySelector('.start-button');
+    const restartBtn = document.querySelector('.restart-button');
+    const gridsizeSelect = document.querySelector('#gridsize-select');
     
     const getPlayerMove = (targetCell) => {
         const moveRow = targetCell.getAttribute('data-row');
