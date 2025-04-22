@@ -240,64 +240,54 @@ const Game = (() => {
             return turnCount++;
         }
     }
+    
+    const createBoardFromGridsizeSelect = () => Gameboard.createBoard(gridsizeSelect.options[gridsizeSelect.selectedIndex].value);
+
+    createBoardFromGridsizeSelect();
+
+    gridsizeSelect.addEventListener('change', createBoardFromGridsizeSelect);
 
     const startGame = () => {
-        gameOngoing = true;
+        const cells = document.querySelectorAll('.gameboard-cell');
         
         const turnCounter = turnCounterFactory();
-        const gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
+        const turnLimit = Math.pow(gridsizeSelect.options[gridsizeSelect.selectedIndex].value, 2);
+
+        let activePlayerID = Utilities.randomIntFromInterval(1,2);
         
-        let turnLimit = Math.pow(gridSize, 2);
-
-        let activePlayerID = 1;
-
-        const addCellsClickListeners = () => {
-            const cells = document.querySelectorAll('.gameboard-cell');
+        gameOngoing = true;
         
-            cells.forEach((cell) => {
-                cell.addEventListener('click', () => {
-                    if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
-                        cell.setAttribute('data-checked', Players.getPlayerSymbol(activePlayerID));
-                        Gameboard.makeMove(getPlayerMove(cell), Players.getPlayerSymbol(activePlayerID));
+        Utilities.disableElement(gridsizeSelect);
+        Utilities.disableElement(startBtn);
 
-                        if (Gameboard.checkForWin()) {
-                            console.log(`${Players.getPlayerName(activePlayerID)} wins!`);
-                            gameOngoing = false;
-                        }
-            
-                        if (turnCounter() === turnLimit) {
-                            console.log('It is a draw!');
-                            gameOngoing = false;
-                        }
-            
-                        activePlayerID = activePlayerID === 1 ? 2 : 1;
+        cells.forEach((cell) => {
+            cell.addEventListener('click', () => {
+                if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
+                    cell.setAttribute('data-checked', Players.getPlayerSymbol(activePlayerID));
+                    Gameboard.makeMove(getPlayerMove(cell), Players.getPlayerSymbol(activePlayerID));
+
+                    if (Gameboard.checkForWin()) {
+                        console.log(`${Players.getPlayerName(activePlayerID)} wins!`);
+                        gameOngoing = false;
                     }
-                });
+            
+                    if (turnCounter() === turnLimit) {
+                        console.log('It is a draw!');
+                        gameOngoing = false;
+                    }
+            
+                    activePlayerID = activePlayerID === 1 ? 2 : 1;
+                }
             });
-        };
-
-        Gameboard.createBoard(gridSize);
-        addCellsClickListeners();
-
-        const createGridSizeSelector = () => {
-            gridSizeSelectElement.addEventListener('change', () => {
-                gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
-                Gameboard.createBoard(gridSize);
-                addCellsClickListeners();
-                turnLimit = Math.pow(gridSize, 2);
-            });
-        };
-        createGridSizeSelector();
+        });
     };
 
-    restartBtnElement.addEventListener('click', () => {
+    startBtn.addEventListener('click', startGame);
+
+    restartBtn.addEventListener('click', () => {
         gameOngoing = false;
-        Gameboard.createBoard(gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value);
-        gridSizeSelectElement.selectedIndex = 0;
+        Gameboard.createBoard(gridsizeSelect.options[gridsizeSelect.selectedIndex].value);
+        gridsizeSelect.selectedIndex = 0;
         startGame();
     });
-
-    return { startGame };
 })();
-
-Game.startGame();
