@@ -153,24 +153,32 @@ const Game = (() => {
 
     const gridSizeSelectElement = document.querySelector('#gridsize-select');
     const restartBtnElement = document.querySelector('.restart-button');
+    
+    const getPlayerMove = (targetCell) => {
+        const moveRow = targetCell.getAttribute('data-row');
+        const moveColumn = targetCell.getAttribute('data-column');
+
+        return { moveRow, moveColumn };
+    };
+
+    const turnCounterFactory = () => {
+        let turnCount = 1;
+        return function () {
+            return turnCount++;
+        }
+    }
 
     const startGame = () => {
         console.log(`Game starts! ${player1.playerName} is playing as ${player1.playerSymbol} against ${player2.playerName} who is playing as ${player2.playerSymbol}`);
         
         gameOngoing = true;
         
+        const turnCounter = turnCounterFactory();
+
         let gridSize = 3;
         let turnLimit = Math.pow(gridSize, 2);
 
         let currentPlayer = player1;
-        let currentTurn = 1;
-
-        const getPlayerMove = (targetCell) => {
-            const moveRow = targetCell.getAttribute('data-row');
-            const moveColumn = targetCell.getAttribute('data-column');
-
-            return { moveRow, moveColumn };
-        };
 
         const addCellsClickListeners = () => {
             const cells = document.querySelectorAll('.gameboard-cell');
@@ -179,7 +187,6 @@ const Game = (() => {
                 cell.addEventListener('click', () => {
                     if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
                         cell.setAttribute('data-checked', currentPlayer.playerSymbol);
-
                         Gameboard.makeMove(getPlayerMove(cell), currentPlayer.playerSymbol);
 
                         if (Gameboard.checkForWin()) {
@@ -187,11 +194,9 @@ const Game = (() => {
                             gameOngoing = false;
                         }
             
-                        if (currentTurn === turnLimit) {
+                        if (turnCounter() === turnLimit) {
                             console.log('It is a draw!');
                             gameOngoing = false;
-                        } else {
-                            ++currentTurn;
                         }
             
                         currentPlayer = currentPlayer === player1 ? player2 : player1;
@@ -216,9 +221,8 @@ const Game = (() => {
 
     restartBtnElement.addEventListener('click', () => {
         gameOngoing = false;
-        
         Gameboard.createBoard(gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value);
-        
+        gridSizeSelectElement.selectedIndex = 0;
         startGame();
     });
 
@@ -227,3 +231,24 @@ const Game = (() => {
 
 Game.startGame();
 
+// const turnCounterFactory = () => {
+//     let turnCount = 1;
+//     return function () {
+//         return turnCount++;
+//     }
+// };
+
+// const clickerTest = () => {
+//     const turnLimit = 9;
+
+//     const turnCountAdder = turnCounterFactory();
+
+//     while (true) {
+//         console.log('turn');
+//         if(turnCountAdder() === turnLimit) {
+//             break;
+//         }
+//     }
+// };
+
+// clickerTest();
