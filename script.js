@@ -8,9 +8,20 @@ const Player = (() => {
     const readyCheckPlayer1 = document.querySelector('#player1-ready');
     const readyCheckPlayer2 = document.querySelector('#player2-ready');
 
+    let player1 = {};
+    let player2 = {};
+
+    const createPlayer = (playerName, playerSymbol) => {
+        const name = playerName;
+        const symbol = playerSymbol;
+        const active = false;
+        const wins = 0;
+
+        return {name, symbol, active, wins};
+    }
+
     const onSymbolChange = (event) => {
         const changedSelect = event.target;
-        
         const otherSelect = changedSelect === symbolSelectPlayer1 ? symbolSelectPlayer2 : symbolSelectPlayer1;
 
         otherSelect.selectedIndex = changedSelect.selectedIndex === 0 ? 1 : 0;
@@ -20,18 +31,43 @@ const Player = (() => {
         const changedNameInput = event.target;
         const readyCheck = changedNameInput === nameInputPlayer1 ? readyCheckPlayer1 : readyCheckPlayer2;
         
-        if (event.target.value !== '') {
-            readyCheck.removeAttribute('disabled');
-        }
+        event.target.value !== '' ? readyCheck.removeAttribute('disabled') : readyCheck.setAttribute('disabled', '');
     };
     
+    const onReadyCheckChange = (event) => {
+        const readyCheck = event.target;
+        const nameInput = readyCheck === readyCheckPlayer1 ? nameInputPlayer1 : nameInputPlayer2;
+        const symbolSelect = readyCheck === readyCheckPlayer1 ? symbolSelectPlayer1 : symbolSelectPlayer2;
+        
+        if (!readyCheck.checked) {
+            nameInput.removeAttribute('disabled');
+            return;
+        }
+        
+        if (readyCheck === readyCheckPlayer1) {
+            player1 = createPlayer(nameInput.value, symbolSelect.options[symbolSelect.selectedIndex].value);
+            console.log(player1);
+        } else {
+            player2 = createPlayer(nameInput.value, symbolSelect.options[symbolSelect.selectedIndex].value);
+            console.log(player2);
+        }
+
+        nameInput.setAttribute('disabled', '');
+        symbolSelectPlayer1.setAttribute('disabled', '');
+        symbolSelectPlayer2.setAttribute('disabled', '');
+    };
+
     symbolSelectPlayer1.addEventListener('change', onSymbolChange);
     symbolSelectPlayer2.addEventListener('change', onSymbolChange);
 
     nameInputPlayer1.addEventListener('change', onNameChange);
     nameInputPlayer2.addEventListener('change', onNameChange);
-})();
 
+    readyCheckPlayer1.addEventListener('change', onReadyCheckChange);
+    readyCheckPlayer2.addEventListener('change', onReadyCheckChange);
+
+    return {};
+})();
 
 const Gameboard = (() => {
     let state = [];
@@ -172,88 +208,93 @@ const Gameboard = (() => {
     return { getState, getWinningCombinations, createBoard, makeMove, checkForWin };
 })();
 
-const Game = (() => {
-    const player1 = createPlayer('Ivan', 'x');
-    const player2 = createPlayer('Vika', 'o');
+// const Game = (() => {
+//     const readyCheckPlayer1 = document.querySelector('#player1-ready');
+//     const readyCheckPlayer2 = document.querySelector('#player2-ready');
 
-    let gameOngoing = false;
+//     readyCheckPlayer1.addEventListener('change', onReadyCheckChange);
+//     readyCheckPlayer2.addEventListener('change', onReadyCheckChange);
 
-    const gridSizeSelectElement = document.querySelector('#gridsize-select');
-    const restartBtnElement = document.querySelector('.restart-button');
+
+
+//     let gameOngoing = false;
+
+//     const gridSizeSelectElement = document.querySelector('#gridsize-select');
+//     const restartBtnElement = document.querySelector('.restart-button');
     
-    const getPlayerMove = (targetCell) => {
-        const moveRow = targetCell.getAttribute('data-row');
-        const moveColumn = targetCell.getAttribute('data-column');
+//     const getPlayerMove = (targetCell) => {
+//         const moveRow = targetCell.getAttribute('data-row');
+//         const moveColumn = targetCell.getAttribute('data-column');
 
-        return { moveRow, moveColumn };
-    };
+//         return { moveRow, moveColumn };
+//     };
 
-    const turnCounterFactory = () => {
-        let turnCount = 1;
-        return function () {
-            return turnCount++;
-        }
-    }
+//     const turnCounterFactory = () => {
+//         let turnCount = 1;
+//         return function () {
+//             return turnCount++;
+//         }
+//     }
 
-    const startGame = () => {
-        console.log(`Game starts! ${player1.playerName} is playing as ${player1.playerSymbol} against ${player2.playerName} who is playing as ${player2.playerSymbol}`);
+//     const startGame = () => {
+//         console.log(`Game starts! ${player1.playerName} is playing as ${player1.playerSymbol} against ${player2.playerName} who is playing as ${player2.playerSymbol}`);
         
-        gameOngoing = true;
+//         gameOngoing = true;
         
-        const turnCounter = turnCounterFactory();
-        const gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
+//         const turnCounter = turnCounterFactory();
+//         const gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
         
-        let turnLimit = Math.pow(gridSize, 2);
+//         let turnLimit = Math.pow(gridSize, 2);
 
-        let currentPlayer = player1;
+//         let currentPlayer = player1;
 
-        const addCellsClickListeners = () => {
-            const cells = document.querySelectorAll('.gameboard-cell');
+//         const addCellsClickListeners = () => {
+//             const cells = document.querySelectorAll('.gameboard-cell');
         
-            cells.forEach((cell) => {
-                cell.addEventListener('click', () => {
-                    if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
-                        cell.setAttribute('data-checked', currentPlayer.playerSymbol);
-                        Gameboard.makeMove(getPlayerMove(cell), currentPlayer.playerSymbol);
+//             cells.forEach((cell) => {
+//                 cell.addEventListener('click', () => {
+//                     if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
+//                         cell.setAttribute('data-checked', currentPlayer.playerSymbol);
+//                         Gameboard.makeMove(getPlayerMove(cell), currentPlayer.playerSymbol);
 
-                        if (Gameboard.checkForWin()) {
-                            console.log(`${currentPlayer.playerName} wins!`);
-                            gameOngoing = false;
-                        }
+//                         if (Gameboard.checkForWin()) {
+//                             console.log(`${currentPlayer.playerName} wins!`);
+//                             gameOngoing = false;
+//                         }
             
-                        if (turnCounter() === turnLimit) {
-                            console.log('It is a draw!');
-                            gameOngoing = false;
-                        }
+//                         if (turnCounter() === turnLimit) {
+//                             console.log('It is a draw!');
+//                             gameOngoing = false;
+//                         }
             
-                        currentPlayer = currentPlayer === player1 ? player2 : player1;
-                    }
-                });
-            });
-        };
+//                         currentPlayer = currentPlayer === player1 ? player2 : player1;
+//                     }
+//                 });
+//             });
+//         };
 
-        Gameboard.createBoard(gridSize);
-        addCellsClickListeners();
+//         Gameboard.createBoard(gridSize);
+//         addCellsClickListeners();
 
-        const createGridSizeSelector = () => {
-            gridSizeSelectElement.addEventListener('change', () => {
-                gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
-                Gameboard.createBoard(gridSize);
-                addCellsClickListeners();
-                turnLimit = Math.pow(gridSize, 2);
-            });
-        };
-        createGridSizeSelector();
-    };
+//         const createGridSizeSelector = () => {
+//             gridSizeSelectElement.addEventListener('change', () => {
+//                 gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
+//                 Gameboard.createBoard(gridSize);
+//                 addCellsClickListeners();
+//                 turnLimit = Math.pow(gridSize, 2);
+//             });
+//         };
+//         createGridSizeSelector();
+//     };
 
-    restartBtnElement.addEventListener('click', () => {
-        gameOngoing = false;
-        Gameboard.createBoard(gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value);
-        gridSizeSelectElement.selectedIndex = 0;
-        startGame();
-    });
+//     restartBtnElement.addEventListener('click', () => {
+//         gameOngoing = false;
+//         Gameboard.createBoard(gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value);
+//         gridSizeSelectElement.selectedIndex = 0;
+//         startGame();
+//     });
 
-    return { startGame };
-})();
+//     return { startGame };
+// })();
 
-Game.startGame();
+// Game.startGame();
