@@ -1,74 +1,3 @@
-const Player = (() => {
-    const symbolSelectPlayer1 = document.querySelector('#player1-symbol-select');
-    const symbolSelectPlayer2 = document.querySelector('#player2-symbol-select');
-
-    const nameInputPlayer1 = document.querySelector('#player1-name');
-    const nameInputPlayer2 = document.querySelector('#player2-name');
-
-    const readyCheckPlayer1 = document.querySelector('#player1-ready');
-    const readyCheckPlayer2 = document.querySelector('#player2-ready');
-
-    let player1 = {};
-    let player2 = {};
-
-    const createPlayer = (playerName, playerSymbol) => {
-        const name = playerName;
-        const symbol = playerSymbol;
-        const active = false;
-        const wins = 0;
-
-        return {name, symbol, active, wins};
-    }
-
-    const onSymbolChange = (event) => {
-        const changedSelect = event.target;
-        const otherSelect = changedSelect === symbolSelectPlayer1 ? symbolSelectPlayer2 : symbolSelectPlayer1;
-
-        otherSelect.selectedIndex = changedSelect.selectedIndex === 0 ? 1 : 0;
-    };
-
-    const onNameChange = (event) => {
-        const changedNameInput = event.target;
-        const readyCheck = changedNameInput === nameInputPlayer1 ? readyCheckPlayer1 : readyCheckPlayer2;
-        
-        event.target.value !== '' ? readyCheck.removeAttribute('disabled') : readyCheck.setAttribute('disabled', '');
-    };
-    
-    const onReadyCheckChange = (event) => {
-        const readyCheck = event.target;
-        const nameInput = readyCheck === readyCheckPlayer1 ? nameInputPlayer1 : nameInputPlayer2;
-        const symbolSelect = readyCheck === readyCheckPlayer1 ? symbolSelectPlayer1 : symbolSelectPlayer2;
-        
-        if (!readyCheck.checked) {
-            nameInput.removeAttribute('disabled');
-            return;
-        }
-        
-        if (readyCheck === readyCheckPlayer1) {
-            player1 = createPlayer(nameInput.value, symbolSelect.options[symbolSelect.selectedIndex].value);
-            console.log(player1);
-        } else {
-            player2 = createPlayer(nameInput.value, symbolSelect.options[symbolSelect.selectedIndex].value);
-            console.log(player2);
-        }
-
-        nameInput.setAttribute('disabled', '');
-        symbolSelectPlayer1.setAttribute('disabled', '');
-        symbolSelectPlayer2.setAttribute('disabled', '');
-    };
-
-    symbolSelectPlayer1.addEventListener('change', onSymbolChange);
-    symbolSelectPlayer2.addEventListener('change', onSymbolChange);
-
-    nameInputPlayer1.addEventListener('change', onNameChange);
-    nameInputPlayer2.addEventListener('change', onNameChange);
-
-    readyCheckPlayer1.addEventListener('change', onReadyCheckChange);
-    readyCheckPlayer2.addEventListener('change', onReadyCheckChange);
-
-    return {};
-})();
-
 const Gameboard = (() => {
     let state = [];
     let winningCombinations = [];
@@ -205,96 +134,165 @@ const Gameboard = (() => {
 
     const getWinningCombinations = () => winningCombinations;
 
-    return { getState, getWinningCombinations, createBoard, makeMove, checkForWin };
+    const disableElement = (element) => element.setAttribute('disabled', '');
+
+    const enableElement = (element) => element.removeAttribute('disabled');
+
+    return { getState, getWinningCombinations, createBoard, makeMove, checkForWin, disableElement, enableElement};
 })();
 
-// const Game = (() => {
-//     const readyCheckPlayer1 = document.querySelector('#player1-ready');
-//     const readyCheckPlayer2 = document.querySelector('#player2-ready');
+const Players = (() => {
+    const symbolSelectPlayer1 = document.querySelector('#player1-symbol-select');
+    const symbolSelectPlayer2 = document.querySelector('#player2-symbol-select');
 
-//     readyCheckPlayer1.addEventListener('change', onReadyCheckChange);
-//     readyCheckPlayer2.addEventListener('change', onReadyCheckChange);
+    const nameInputPlayer1 = document.querySelector('#player1-name');
+    const nameInputPlayer2 = document.querySelector('#player2-name');
 
+    const readyCheckPlayer1 = document.querySelector('#player1-ready');
+    const readyCheckPlayer2 = document.querySelector('#player2-ready');
 
+    const startBtn = document.querySelector('.start-button');
+    const restartBtn = document.querySelector('.restart-button');
+    const gridsizeSelect = document.querySelector('#gridsize-select');
 
-//     let gameOngoing = false;
+    let player1 = {};
+    let player2 = {};
 
-//     const gridSizeSelectElement = document.querySelector('#gridsize-select');
-//     const restartBtnElement = document.querySelector('.restart-button');
+    const createPlayer = (playerName, playerSymbol) => {
+        const name = playerName;
+        const symbol = playerSymbol;
+        const wins = 0;
+
+        return {name, symbol, wins};
+    }
+
+    const onSymbolChange = (event) => {
+        const changedSelect = event.target;
+        const otherSelect = changedSelect === symbolSelectPlayer1 ? symbolSelectPlayer2 : symbolSelectPlayer1;
+
+        otherSelect.selectedIndex = changedSelect.selectedIndex === 0 ? 1 : 0;
+    };
+
+    const onNameChange = (event) => {
+        const changedNameInput = event.target;
+        const readyCheck = changedNameInput === nameInputPlayer1 ? readyCheckPlayer1 : readyCheckPlayer2;
+        
+        event.target.value !== '' ? Gameboard.enableElement(readyCheck) : Gameboard.enableElement(readyCheck);
+    };
     
-//     const getPlayerMove = (targetCell) => {
-//         const moveRow = targetCell.getAttribute('data-row');
-//         const moveColumn = targetCell.getAttribute('data-column');
-
-//         return { moveRow, moveColumn };
-//     };
-
-//     const turnCounterFactory = () => {
-//         let turnCount = 1;
-//         return function () {
-//             return turnCount++;
-//         }
-//     }
-
-//     const startGame = () => {
-//         console.log(`Game starts! ${player1.playerName} is playing as ${player1.playerSymbol} against ${player2.playerName} who is playing as ${player2.playerSymbol}`);
+    const onReadyCheckChange = (event) => {
+        const readyCheck = event.target;
+        const nameInput = readyCheck === readyCheckPlayer1 ? nameInputPlayer1 : nameInputPlayer2;
+        const symbolSelect = readyCheck === readyCheckPlayer1 ? symbolSelectPlayer1 : symbolSelectPlayer2;
         
-//         gameOngoing = true;
-        
-//         const turnCounter = turnCounterFactory();
-//         const gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
-        
-//         let turnLimit = Math.pow(gridSize, 2);
+        readyCheck === readyCheckPlayer1 ?
+            player1 = createPlayer(nameInput.value, symbolSelect.options[symbolSelect.selectedIndex].value) :
+            player2 = createPlayer(nameInput.value, symbolSelect.options[symbolSelect.selectedIndex].value);
 
-//         let currentPlayer = player1;
-
-//         const addCellsClickListeners = () => {
-//             const cells = document.querySelectorAll('.gameboard-cell');
+        Gameboard.disableElement(nameInput);
+        Gameboard.disableElement(symbolSelectPlayer1);
+        Gameboard.disableElement(symbolSelectPlayer2);
         
-//             cells.forEach((cell) => {
-//                 cell.addEventListener('click', () => {
-//                     if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
-//                         cell.setAttribute('data-checked', currentPlayer.playerSymbol);
-//                         Gameboard.makeMove(getPlayerMove(cell), currentPlayer.playerSymbol);
+        if(readyCheckPlayer1.checked && readyCheckPlayer2.checked) {
+            Gameboard.enableElement(startBtn);
+            Gameboard.enableElement(restartBtn);
+            Gameboard.enableElement(gridsizeSelect);
+        }
+    };
 
-//                         if (Gameboard.checkForWin()) {
-//                             console.log(`${currentPlayer.playerName} wins!`);
-//                             gameOngoing = false;
-//                         }
+    symbolSelectPlayer1.addEventListener('change', onSymbolChange);
+    symbolSelectPlayer2.addEventListener('change', onSymbolChange);
+
+    nameInputPlayer1.addEventListener('change', onNameChange);
+    nameInputPlayer2.addEventListener('change', onNameChange);
+
+    readyCheckPlayer1.addEventListener('change', onReadyCheckChange);
+    readyCheckPlayer2.addEventListener('change', onReadyCheckChange);
+
+    const getPlayerName = (playerID) => playerID === 1 ? player1.name : player2.name;
+    const getPlayerSymbol = (playerID) => playerID === 1 ? player1.symbol : player2.symbol;
+    const getPlayerWins = (playerID) => playerID === 1 ? player1.wins : player2.wins;
+
+    return { getPlayerName, getPlayerSymbol, getPlayerWins };
+})();
+
+const Game = (() => {
+    let gameOngoing = false;
+
+    const gridSizeSelectElement = document.querySelector('#gridsize-select');
+    const restartBtnElement = document.querySelector('.restart-button');
+    
+    const getPlayerMove = (targetCell) => {
+        const moveRow = targetCell.getAttribute('data-row');
+        const moveColumn = targetCell.getAttribute('data-column');
+
+        return { moveRow, moveColumn };
+    };
+
+    const turnCounterFactory = () => {
+        let turnCount = 1;
+        return function () {
+            return turnCount++;
+        }
+    }
+
+    const startGame = () => {
+        gameOngoing = true;
+        
+        const turnCounter = turnCounterFactory();
+        const gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
+        
+        let turnLimit = Math.pow(gridSize, 2);
+
+        let activePlayerID = 1;
+
+        const addCellsClickListeners = () => {
+            const cells = document.querySelectorAll('.gameboard-cell');
+        
+            cells.forEach((cell) => {
+                cell.addEventListener('click', () => {
+                    if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
+                        cell.setAttribute('data-checked', Players.getPlayerSymbol(activePlayerID));
+                        Gameboard.makeMove(getPlayerMove(cell), Players.getPlayerSymbol(activePlayerID));
+
+                        if (Gameboard.checkForWin()) {
+                            console.log(`${Players.getPlayerName(activePlayerID)} wins!`);
+                            gameOngoing = false;
+                        }
             
-//                         if (turnCounter() === turnLimit) {
-//                             console.log('It is a draw!');
-//                             gameOngoing = false;
-//                         }
+                        if (turnCounter() === turnLimit) {
+                            console.log('It is a draw!');
+                            gameOngoing = false;
+                        }
             
-//                         currentPlayer = currentPlayer === player1 ? player2 : player1;
-//                     }
-//                 });
-//             });
-//         };
+                        activePlayerID = activePlayerID === 1 ? 2 : 1;
+                    }
+                });
+            });
+        };
 
-//         Gameboard.createBoard(gridSize);
-//         addCellsClickListeners();
+        Gameboard.createBoard(gridSize);
+        addCellsClickListeners();
 
-//         const createGridSizeSelector = () => {
-//             gridSizeSelectElement.addEventListener('change', () => {
-//                 gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
-//                 Gameboard.createBoard(gridSize);
-//                 addCellsClickListeners();
-//                 turnLimit = Math.pow(gridSize, 2);
-//             });
-//         };
-//         createGridSizeSelector();
-//     };
+        const createGridSizeSelector = () => {
+            gridSizeSelectElement.addEventListener('change', () => {
+                gridSize = gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value;
+                Gameboard.createBoard(gridSize);
+                addCellsClickListeners();
+                turnLimit = Math.pow(gridSize, 2);
+            });
+        };
+        createGridSizeSelector();
+    };
 
-//     restartBtnElement.addEventListener('click', () => {
-//         gameOngoing = false;
-//         Gameboard.createBoard(gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value);
-//         gridSizeSelectElement.selectedIndex = 0;
-//         startGame();
-//     });
+    restartBtnElement.addEventListener('click', () => {
+        gameOngoing = false;
+        Gameboard.createBoard(gridSizeSelectElement.options[gridSizeSelectElement.selectedIndex].value);
+        gridSizeSelectElement.selectedIndex = 0;
+        startGame();
+    });
 
-//     return { startGame };
-// })();
+    return { startGame };
+})();
 
-// Game.startGame();
+Game.startGame();
