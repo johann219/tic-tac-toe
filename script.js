@@ -2,6 +2,12 @@ const Player = (() => {
     const symbolSelectPlayer1 = document.querySelector('#player1-symbol-select');
     const symbolSelectPlayer2 = document.querySelector('#player2-symbol-select');
 
+    const nameInputPlayer1 = document.querySelector('#player1-name');
+    const nameInputPlayer2 = document.querySelector('#player2-name');
+
+    const readyCheckPlayer1 = document.querySelector('#player1-ready');
+    const readyCheckPlayer2 = document.querySelector('#player2-ready');
+
     const onSymbolChange = (event) => {
         const changedSelect = event.target;
         
@@ -9,9 +15,21 @@ const Player = (() => {
 
         otherSelect.selectedIndex = changedSelect.selectedIndex === 0 ? 1 : 0;
     };
+
+    const onNameChange = (event) => {
+        const changedNameInput = event.target;
+        const readyCheck = changedNameInput === nameInputPlayer1 ? readyCheckPlayer1 : readyCheckPlayer2;
+        
+        if (event.target.value !== '') {
+            readyCheck.removeAttribute('disabled');
+        }
+    };
     
     symbolSelectPlayer1.addEventListener('change', onSymbolChange);
     symbolSelectPlayer2.addEventListener('change', onSymbolChange);
+
+    nameInputPlayer1.addEventListener('change', onNameChange);
+    nameInputPlayer2.addEventListener('change', onNameChange);
 })();
 
 
