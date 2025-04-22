@@ -156,7 +156,6 @@ const Players = (() => {
     const readyCheckPlayer2 = document.querySelector('#player2-ready');
 
     const startBtn = document.querySelector('.start-button');
-    const restartBtn = document.querySelector('.restart-button');
     const gridsizeSelect = document.querySelector('#gridsize-select');
 
     let player1 = {};
@@ -199,7 +198,6 @@ const Players = (() => {
         
         if(readyCheckPlayer1.checked && readyCheckPlayer2.checked) {
             Utilities.enableElement(startBtn);
-            Utilities.enableElement(restartBtn);
             Utilities.enableElement(gridsizeSelect);
         }
     };
@@ -216,15 +214,16 @@ const Players = (() => {
     const getPlayerName = (playerID) => playerID === 1 ? player1.name : player2.name;
     const getPlayerSymbol = (playerID) => playerID === 1 ? player1.symbol : player2.symbol;
     const getPlayerWins = (playerID) => playerID === 1 ? player1.wins : player2.wins;
+    const increasePlayerWins = (playerID) => playerID === 1 ? ++player1.wins : ++player2.wins;
 
-    return { getPlayerName, getPlayerSymbol, getPlayerWins };
+    return { getPlayerName, getPlayerSymbol, getPlayerWins, increasePlayerWins };
 })();
 
 const Game = (() => {
     let gameOngoing = false;
 
     const startBtn = document.querySelector('.start-button');
-    const restartBtn = document.querySelector('.restart-button');
+    const newRoundBtn = document.querySelector('.newround-button');
     const gridsizeSelect = document.querySelector('#gridsize-select');
     
     const getPlayerMove = (targetCell) => {
@@ -259,35 +258,42 @@ const Game = (() => {
         
         Utilities.disableElement(gridsizeSelect);
         Utilities.disableElement(startBtn);
+        Utilities.enableElement(newRoundBtn);
 
-        cells.forEach((cell) => {
-            cell.addEventListener('click', () => {
-                if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
-                    cell.setAttribute('data-checked', Players.getPlayerSymbol(activePlayerID));
-                    Gameboard.makeMove(getPlayerMove(cell), Players.getPlayerSymbol(activePlayerID));
+        const changeActivePlayer = () => activePlayerID = activePlayerID === 1 ? 2 : 1;
 
-                    if (Gameboard.checkForWin()) {
-                        console.log(`${Players.getPlayerName(activePlayerID)} wins!`);
-                        gameOngoing = false;
-                    }
-            
-                    if (turnCounter() === turnLimit) {
-                        console.log('It is a draw!');
-                        gameOngoing = false;
-                    }
-            
-                    activePlayerID = activePlayerID === 1 ? 2 : 1;
+        const onCellClick = (event) => {
+            const cell = event.target;
+
+            if(gameOngoing && cell.getAttribute('data-checked') === 'null') {
+                cell.setAttribute('data-checked', Players.getPlayerSymbol(activePlayerID));
+                Gameboard.makeMove(getPlayerMove(cell), Players.getPlayerSymbol(activePlayerID));
+
+                if (Gameboard.checkForWin()) {
+                    console.log(`${Players.getPlayerName(activePlayerID)} wins!`);
+                    Players.increasePlayerWins(activePlayerID);
+                    gameOngoing = false;
                 }
-            });
-        });
+        
+                if (turnCounter() === turnLimit && gameOngoing) {
+                    console.log('It is a draw!');
+                    gameOngoing = false;
+                }
+        
+                changeActivePlayer();
+            }
+        }
+        cells.forEach((cell) => cell.addEventListener('click', onCellClick));
     };
 
     startBtn.addEventListener('click', startGame);
 
-    restartBtn.addEventListener('click', () => {
+    newRoundBtn.addEventListener('click', () => {
+        createBoardFromGridsizeSelect();
         gameOngoing = false;
-        Gameboard.createBoard(gridsizeSelect.options[gridsizeSelect.selectedIndex].value);
-        gridsizeSelect.selectedIndex = 0;
-        startGame();
+
+        Utilities.disableElement(newRoundBtn);
+        Utilities.enableElement(gridsizeSelect);
+        Utilities.enableElement(startBtn);
     });
 })();
