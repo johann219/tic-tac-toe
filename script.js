@@ -1,9 +1,13 @@
 const Utilities = (() => {
     const disableElement = (element) => element.setAttribute('disabled', '');
     const enableElement = (element) => element.removeAttribute('disabled');
+
+    const showElement = (element) => element.classList.remove('hidden');
+    const hideElement = (element) => element.classList.add('hidden');
+
     const randomIntFromInterval = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
     
-    return { disableElement, enableElement, randomIntFromInterval };
+    return { disableElement, enableElement, showElement, hideElement, randomIntFromInterval };
 })();
 
 const Gameboard = (() => {
@@ -158,6 +162,11 @@ const Players = (() => {
     const startBtn = document.querySelector('.start-button');
     const gridsizeSelect = document.querySelector('#gridsize-select');
 
+    const playerForms = document.querySelectorAll('.player-form');
+
+    const infoPlayer1 = document.querySelector('#player-info-1');
+    const infoPlayer2 = document.querySelector('#player-info-2');
+
     let player1 = {};
     let player2 = {};
 
@@ -168,6 +177,11 @@ const Players = (() => {
 
         return {name, symbol, wins};
     }
+
+    const createPlayerInfo = (player, info) => {
+        info.parentElement.querySelector('h2').textContent = player.name;
+        info.querySelector('.player-symbol > span').textContent = player.symbol;
+    };
 
     const onSymbolChange = (event) => {
         const changedSelect = event.target;
@@ -197,9 +211,56 @@ const Players = (() => {
         Utilities.disableElement(symbolSelectPlayer2);
         
         if(readyCheckPlayer1.checked && readyCheckPlayer2.checked) {
+            createPlayerInfo(player1, infoPlayer1);
+            createPlayerInfo(player2, infoPlayer2);
+
+            Utilities.showElement(infoPlayer1);
+            Utilities.showElement(infoPlayer2);
+
+            playerForms.forEach((form) => Utilities.hideElement(form));
+            
             Utilities.enableElement(startBtn);
             Utilities.enableElement(gridsizeSelect);
         }
+
+        console.log(`Player 1 = ${player1.name}, ${player1.symbol}`);
+        console.log(`Player 2 = ${player2.name}, ${player2.symbol}`);
+    };
+
+    const resetPlayers = () => {
+        player1 = {};
+        player2 = {};
+    };
+
+    const resetPlayerInfos = () => {
+        infoPlayer1.parentElement.querySelector('h2').textContent = 'Player 1';
+        infoPlayer1.querySelector('.player-symbol > span').textContent = '';
+        infoPlayer1.querySelector('.player-wins > span').textContent = 0;
+        Utilities.hideElement(infoPlayer1);
+
+        infoPlayer2.parentElement.querySelector('h2').textContent = 'Player 2';
+        infoPlayer2.querySelector('.player-symbol > span').textContent = '';
+        infoPlayer2.querySelector('.player-wins > span').textContent = 0;
+        Utilities.hideElement(infoPlayer2);
+    };
+
+    const resetPlayerForms = () => {
+        playerForms.forEach((form) => Utilities.showElement(form));
+
+        nameInputPlayer1.value = '';
+        nameInputPlayer2.value = '';
+
+        Utilities.enableElement(nameInputPlayer1);
+        Utilities.enableElement(nameInputPlayer2);
+
+        Utilities.enableElement(symbolSelectPlayer1);
+        Utilities.enableElement(symbolSelectPlayer2);
+
+        readyCheckPlayer1.checked = false;
+        readyCheckPlayer2.checked = false;
+
+        Utilities.disableElement(readyCheckPlayer1);
+        Utilities.disableElement(readyCheckPlayer2);
     };
 
     symbolSelectPlayer1.addEventListener('change', onSymbolChange);
@@ -216,7 +277,7 @@ const Players = (() => {
     const getPlayerWins = (playerID) => playerID === 1 ? player1.wins : player2.wins;
     const increasePlayerWins = (playerID) => playerID === 1 ? ++player1.wins : ++player2.wins;
 
-    return { getPlayerName, getPlayerSymbol, getPlayerWins, increasePlayerWins };
+    return { getPlayerName, getPlayerSymbol, getPlayerWins, increasePlayerWins, resetPlayers, resetPlayerInfos, resetPlayerForms };
 })();
 
 const Game = (() => {
@@ -225,7 +286,7 @@ const Game = (() => {
     const startBtn = document.querySelector('.start-button');
     const newRoundBtn = document.querySelector('.newround-button');
     const gridsizeSelect = document.querySelector('#gridsize-select');
-    
+    const resetBtn = document.querySelector('.reset-button');
     const getPlayerMove = (targetCell) => {
         const moveRow = targetCell.getAttribute('data-row');
         const moveColumn = targetCell.getAttribute('data-column');
@@ -241,10 +302,6 @@ const Game = (() => {
     }
     
     const createBoardFromGridsizeSelect = () => Gameboard.createBoard(gridsizeSelect.options[gridsizeSelect.selectedIndex].value);
-
-    createBoardFromGridsizeSelect();
-
-    gridsizeSelect.addEventListener('change', createBoardFromGridsizeSelect);
 
     const startGame = () => {
         const cells = document.querySelectorAll('.gameboard-cell');
@@ -286,6 +343,24 @@ const Game = (() => {
         cells.forEach((cell) => cell.addEventListener('click', onCellClick));
     };
 
+    const fullReset = () => {
+        Players.resetPlayers();
+        Players.resetPlayerInfos();
+        Players.resetPlayerForms();
+        gridsizeSelect.selectedIndex = 0;
+        
+        createBoardFromGridsizeSelect();
+        gameOngoing = false
+
+        Utilities.disableElement(startBtn);
+        Utilities.disableElement(newRoundBtn);
+        Utilities.disableElement(gridsizeSelect);
+    };
+
+    createBoardFromGridsizeSelect();
+
+    gridsizeSelect.addEventListener('change', createBoardFromGridsizeSelect);
+    
     startBtn.addEventListener('click', startGame);
 
     newRoundBtn.addEventListener('click', () => {
@@ -296,4 +371,6 @@ const Game = (() => {
         Utilities.enableElement(gridsizeSelect);
         Utilities.enableElement(startBtn);
     });
+
+    resetBtn.addEventListener('click', fullReset);
 })();

@@ -93,3 +93,7 @@ main {
 .gameboard-cell[data-checked="o"] {
   background-color: white;
 }
+
+.hidden {
+  display: none;
+}

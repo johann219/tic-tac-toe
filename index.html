@@ -12,9 +12,9 @@
         <h1>Tic Tac Toe</h1>
     </header>
     <main>
-        <section class="player-section">
-            <form action="" class="player-info">
-                <h2>Player 1</h2>
+        <section class="player-section" id="player-section-1">
+            <h2>Player 1</h2>
+            <form action="" class="player-form" id="player-form-1">
                 <div class="form-row">
                     <label for="player1-name">Enter your name:</label>
                     <input type="text" id="player1-name">
@@ -30,8 +30,13 @@
                     <label for="player1-ready">Ready</label>
                 </div>
             </form>
+            <div class="player-info hidden" id="player-info-1">
+                <p class="player-symbol">Plays as <span></span></p>
+                <p class="player-wins">Wins: <span>0</span></p>
+            </div>
         </section>
         <section class="gameboard-section">
+            <button class="reset-button">Reset</button>
             <select name="gridsize-select" id="gridsize-select" disabled>
                 <option value="3">3</option>
                 <option value="4">4</option>
@@ -43,9 +48,9 @@
             <button class="newround-button" disabled>New Round</button>
             <button class="start-button" disabled>Start Game</button>
         </section>
-        <section class="player-section">
-            <form action="" class="player-info">
-                <h2>Player 2</h2>
+        <section class="player-section" id="player-section-2">
+            <h2>Player 2</h2>
+            <form action="" class="player-form" id="player-form-2">
                 <div class="form-row">
                     <label for="player2-name">Enter your name:</label>
                     <input type="text" id="player2-name">
@@ -61,6 +66,10 @@
                     <label for="player2-ready">Ready</label>
                 </div>
             </form>
+            <div class="player-info hidden" id="player-info-2">
+                <p class="player-symbol">Plays as <span></span></p>
+                <p class="player-wins">Wins: <span>0</span></p>
+            </div>
         </section>
     </main>
     <footer>
