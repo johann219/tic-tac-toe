@@ -222,9 +222,6 @@ const Players = (() => {
             Utilities.enableElement(startBtn);
             Utilities.enableElement(gridsizeSelect);
         }
-
-        console.log(`Player 1 = ${player1.name}, ${player1.symbol}`);
-        console.log(`Player 2 = ${player2.name}, ${player2.symbol}`);
     };
 
     const resetPlayers = () => {
@@ -262,7 +259,7 @@ const Players = (() => {
         Utilities.disableElement(readyCheckPlayer1);
         Utilities.disableElement(readyCheckPlayer2);
     };
-
+    
     symbolSelectPlayer1.addEventListener('change', onSymbolChange);
     symbolSelectPlayer2.addEventListener('change', onSymbolChange);
 
@@ -276,8 +273,13 @@ const Players = (() => {
     const getPlayerSymbol = (playerID) => playerID === 1 ? player1.symbol : player2.symbol;
     const getPlayerWins = (playerID) => playerID === 1 ? player1.wins : player2.wins;
     const increasePlayerWins = (playerID) => playerID === 1 ? ++player1.wins : ++player2.wins;
+    
+    const updatePlayerWinsDisplay = (playerID) => {
+        const playerInfo = playerID === 1 ? infoPlayer1 : infoPlayer2;
+        playerInfo.querySelector('.player-wins > span').textContent = getPlayerWins(playerID);
+    };
 
-    return { getPlayerName, getPlayerSymbol, getPlayerWins, increasePlayerWins, resetPlayers, resetPlayerInfos, resetPlayerForms };
+    return { getPlayerName, getPlayerSymbol, getPlayerWins, increasePlayerWins, resetPlayers, resetPlayerInfos, resetPlayerForms, updatePlayerWinsDisplay };
 })();
 
 const Game = (() => {
@@ -329,6 +331,7 @@ const Game = (() => {
                 if (Gameboard.checkForWin()) {
                     console.log(`${Players.getPlayerName(activePlayerID)} wins!`);
                     Players.increasePlayerWins(activePlayerID);
+                    Players.updatePlayerWinsDisplay(activePlayerID);
                     gameOngoing = false;
                 }
         
