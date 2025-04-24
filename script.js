@@ -289,6 +289,11 @@ const Game = (() => {
     const newRoundBtn = document.querySelector('.newround-button');
     const gridsizeSelect = document.querySelector('#gridsize-select');
     const resetBtn = document.querySelector('.reset-button');
+
+    const playerSection1 = document.querySelector('#player-section-1');
+    const playerSection2 = document.querySelector('#player-section-2');
+
+    
     const getPlayerMove = (targetCell) => {
         const moveRow = targetCell.getAttribute('data-row');
         const moveColumn = targetCell.getAttribute('data-column');
@@ -310,16 +315,21 @@ const Game = (() => {
         
         const turnCounter = turnCounterFactory();
         const turnLimit = Math.pow(gridsizeSelect.options[gridsizeSelect.selectedIndex].value, 2);
-
-        let activePlayerID = Utilities.randomIntFromInterval(1,2);
         
-        gameOngoing = true;
-        
-        Utilities.disableElement(gridsizeSelect);
-        Utilities.disableElement(startBtn);
-        Utilities.enableElement(newRoundBtn);
-
-        const changeActivePlayer = () => activePlayerID = activePlayerID === 1 ? 2 : 1;
+        const changeActivePlayerDisplay = (activePlayerID) => {
+            if (activePlayerID === 1) {
+                playerSection1.classList.add('active-player');
+                playerSection2.classList.remove('active-player');
+            } else {
+                playerSection2.classList.add('active-player');
+                playerSection1.classList.remove('active-player');
+            }
+        };
+    
+        const changeActivePlayer = () => {
+           activePlayerID = activePlayerID === 1 ? 2 : 1;
+           changeActivePlayerDisplay(activePlayerID);
+        };
 
         const onCellClick = (event) => {
             const cell = event.target;
@@ -332,17 +342,34 @@ const Game = (() => {
                     console.log(`${Players.getPlayerName(activePlayerID)} wins!`);
                     Players.increasePlayerWins(activePlayerID);
                     Players.updatePlayerWinsDisplay(activePlayerID);
+                    playerSection1.classList.remove('active-player');
+                    playerSection2.classList.remove('active-player');
                     gameOngoing = false;
+                    return;
                 }
         
                 if (turnCounter() === turnLimit && gameOngoing) {
                     console.log('It is a draw!');
+                    playerSection1.classList.remove('active-player');
+                    playerSection2.classList.remove('active-player');
                     gameOngoing = false;
+                    return;
                 }
         
                 changeActivePlayer();
             }
         }
+
+        gameOngoing = true;
+
+        let activePlayerID = Utilities.randomIntFromInterval(1,2);
+
+        changeActivePlayer(activePlayerID);
+
+        Utilities.disableElement(gridsizeSelect);
+        Utilities.disableElement(startBtn);
+        Utilities.enableElement(newRoundBtn);
+        
         cells.forEach((cell) => cell.addEventListener('click', onCellClick));
     };
 
