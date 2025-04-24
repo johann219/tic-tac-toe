@@ -293,6 +293,7 @@ const Game = (() => {
     const playerSection1 = document.querySelector('#player-section-1');
     const playerSection2 = document.querySelector('#player-section-2');
 
+    const gameResult = document.querySelector('.game-result');
     
     const getPlayerMove = (targetCell) => {
         const moveRow = targetCell.getAttribute('data-row');
@@ -339,7 +340,8 @@ const Game = (() => {
                 Gameboard.makeMove(getPlayerMove(cell), Players.getPlayerSymbol(activePlayerID));
 
                 if (Gameboard.checkForWin()) {
-                    console.log(`${Players.getPlayerName(activePlayerID)} wins!`);
+                    gameResult.textContent = `${Players.getPlayerName(activePlayerID)} wins!`;
+                    Utilities.showElement(gameResult);
                     Players.increasePlayerWins(activePlayerID);
                     Players.updatePlayerWinsDisplay(activePlayerID);
                     playerSection1.classList.remove('active-player');
@@ -349,7 +351,8 @@ const Game = (() => {
                 }
         
                 if (turnCounter() === turnLimit && gameOngoing) {
-                    console.log('It is a draw!');
+                    gameResult.textContent = 'It is a draw!';
+                    Utilities.showElement(gameResult);
                     playerSection1.classList.remove('active-player');
                     playerSection2.classList.remove('active-player');
                     gameOngoing = false;
@@ -385,6 +388,11 @@ const Game = (() => {
         Utilities.disableElement(startBtn);
         Utilities.disableElement(newRoundBtn);
         Utilities.disableElement(gridsizeSelect);
+
+        playerSection1.classList.remove('active-player');
+        playerSection2.classList.remove('active-player');
+
+        Utilities.hideElement(gameResult);
     };
 
     createBoardFromGridsizeSelect();
@@ -396,7 +404,8 @@ const Game = (() => {
     newRoundBtn.addEventListener('click', () => {
         createBoardFromGridsizeSelect();
         gameOngoing = false;
-
+        
+        Utilities.hideElement(gameResult);
         Utilities.disableElement(newRoundBtn);
         Utilities.enableElement(gridsizeSelect);
         Utilities.enableElement(startBtn);
