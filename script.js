@@ -205,7 +205,7 @@ const Players = (() => {
         const changedNameInput = event.target;
         const readyCheck = changedNameInput === nameInputPlayer1 ? readyCheckPlayer1 : readyCheckPlayer2;
         
-        event.target.value !== '' ? Utilities.enableElement(readyCheck) : Utilities.enableElement(readyCheck);
+        event.target.value !== '' ? Utilities.enableElement(readyCheck) : Utilities.disableElement(readyCheck);
     };
     
     const onReadyCheckChange = (event) => {
