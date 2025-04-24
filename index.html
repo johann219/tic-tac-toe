@@ -16,16 +16,17 @@
             <h2>Player 1</h2>
             <form action="" class="player-form" id="player-form-1">
                 <div class="form-row">
-                    <label for="player1-name">Enter your name:</label>
-                    <input type="text" id="player1-name">
+                    <label for="player1-name">Name:</label>
+                    <input type="text" id="player1-name" autocomplete="off">
                 </div>
                 <div class="form-row">
+                    <span>Symbol:</span>
                     <select name="player1-symbol-select" id="player1-symbol-select" class="player-symbol-select">
                         <option value="x" selected>Black</option>
                         <option value="o">White</option>
                     </select>
                 </div>
-                <div class="form-row">
+                <div class="form-row check-row">
                     <input type="checkbox" id="player1-ready" disabled>
                     <label for="player1-ready">Ready</label>
                 </div>
@@ -52,16 +53,17 @@
             <h2>Player 2</h2>
             <form action="" class="player-form" id="player-form-2">
                 <div class="form-row">
-                    <label for="player2-name">Enter your name:</label>
-                    <input type="text" id="player2-name">
+                    <label for="player2-name">Name:</label>
+                    <input type="text" id="player2-name" autocomplete="off">
                 </div>
                 <div class="form-row">
+                    <span>Symbol:</span>
                     <select name="player2-symbol-select" id="player2-symbol-select" class="player-symbol-select">
                         <option value="x">Black</option>
                         <option value="o" selected>White</option>
                     </select>
                 </div>
-                <div class="form-row">
+                <div class="form-row check-row">
                     <input type="checkbox" id="player2-ready" disabled>
                     <label for="player2-ready">Ready</label>
                 </div>

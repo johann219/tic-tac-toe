@@ -25,10 +25,12 @@ img, picture, video, canvas, svg {
 }
 
 :root {
+  --blue-sky: #A8C5D1;
   --blue-dusty: #8DB3C2;
   --blue-teal-soft: #7FA9BA;
   --blue-teal: #64A0B5;
   --blue-dark: #0A2E38;
+  --gray-disabled: #ccc;
 }
 
 body {
@@ -62,16 +64,20 @@ main {
 }
 
 .player-section {
-  text-align: center;
   background-color: var(--blue-dusty);
   color: var(--blue-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .gameboard-section {
   background-color: var(--blue-teal-soft);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 20px;
 }
 
 .gameboard-cell {
@@ -79,8 +85,8 @@ main {
 }
 
 .gameboard-wrapper {
-  width: 500px;
-  height: 500px;
+  width: 720px;
+  height: 720px;
   padding: 20px;
   display: grid;
   background-color: var(--blue-dusty);
@@ -96,4 +102,90 @@ main {
 
 .hidden {
   display: none;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 0.2rem;
+}
+
+.check-row {
+  justify-content: center;
+  gap: 60px;
+}
+
+input[type="text"],
+button,
+.player-section select,
+.gameboard-section select {
+  width: 60%;
+  background-color: var(--blue-sky);
+  color: var(--blue-dark);
+  outline: none;
+  border: 1px solid var(--blue-teal);
+  border-radius: 4px;
+}
+
+input[type="text"],
+.player-section select {
+  width: 60%;
+}
+
+.gameboard-section select,
+button {
+  width: 360px;
+}
+
+button:disabled {
+  background-color: var(--blue-dusty);
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  position: relative;
+  width: 30px;
+  height: 30px;
+  background: var(--blue-sky);
+  box-shadow: inset 0 0 5px rgb(0 0 0 / 0.2);
+  border-radius: 10px;
+  border: 1px solid var(--blue-teal);
+  transition: 500ms;
+}
+
+input[type="checkbox"]::after {
+  content: "\2714";
+  position: absolute;
+  top: -1px;
+  left: 3px;
+  width: 0px;
+  height: 0px;
+  font-size: 26px;
+  transition: 500ms;
+  overflow: hidden;
+  color: var(--blue-dark);
+}
+
+input[type="checkbox"]:checked::after {
+  width: 30px;
+  height: 30px;
+  transition: 500ms;
+}
+
+input[type="checkbox"]:disabled {
+  background: var(--gray-disabled);
+  border-color: var(--gray-disabled);
+}
+
+.active-player {
+  border: 2px solid var(--blue-dark);
 }
