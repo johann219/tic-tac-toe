@@ -31,6 +31,7 @@ img, picture, video, canvas, svg {
   --blue-teal: #64A0B5;
   --blue-dark: #0A2E38;
   --gray-disabled: #ccc;
+  --orange-bright: #FFA500;
 }
 
 body {
@@ -188,4 +189,8 @@ input[type="checkbox"]:disabled {
 
 .active-player {
   border: 2px solid var(--blue-dark);
+}
+
+.winning-cell {
+  border: 8px solid var(--orange-bright);
 }

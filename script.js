@@ -89,24 +89,35 @@ const Gameboard = (() => {
 
     const makeMove = (move, symbol) => state[move.moveRow - 1][move.moveColumn - 1] = symbol;
 
-    const checkForWin = () => winningCombinations.some((winLineCoordinates) => {
-        const winCellFirstRowCoordinate = winLineCoordinates[0][0];
-        const winCellFirstColumnCoordinate = winLineCoordinates[0][1];
+    const checkForWin = () => {
+        for (const winLineCoordinates of winningCombinations) {
+            const winCellFirstRowCoordinate = winLineCoordinates[0][0];
+            const winCellFirstColumnCoordinate = winLineCoordinates[0][1];
+            const winCellFirstValue = state[winCellFirstRowCoordinate][winCellFirstColumnCoordinate];
+    
+            if (winCellFirstValue !== null) {
+                const isWinningLine = winLineCoordinates.every((winCellCoordinates) => {
+                    const cellToCompareRowCoordinate = winCellCoordinates[0];
+                    const cellToCompareColumnCoordinate = winCellCoordinates[1];
+                    const cellToCompareValue = state[cellToCompareRowCoordinate][cellToCompareColumnCoordinate];
+    
+                    return winCellFirstValue === cellToCompareValue;
+                });
 
-        const winCellFirstValue = state[winCellFirstRowCoordinate][winCellFirstColumnCoordinate];
-
-        if (winCellFirstValue !== null) {
-            return winLineCoordinates.every((winCellCoordinates) => {
-                const cellToCompareRowCoordinate = winCellCoordinates[0];
-                const cellToCompareColumnCoordinate = winCellCoordinates[1];
-                        
-                const cellToCompareValue = state[cellToCompareRowCoordinate][cellToCompareColumnCoordinate];
-
-                return winCellFirstValue === cellToCompareValue;
-            });
+                if(isWinningLine) {
+                    return {
+                        won: true,
+                        line: winLineCoordinates,
+                    }
+                }
+            }
         }
-        return false;
-    });
+        
+        return {
+            won: false, 
+            line: null,
+        };
+    };
 
     const renderBoard = (gridSize) => {
         const board = new DocumentFragment();
@@ -332,6 +343,32 @@ const Game = (() => {
            changeActivePlayerDisplay(activePlayerID);
         };
 
+        const onWinCondition = () => {
+            gameResult.textContent = `${Players.getPlayerName(activePlayerID)} wins!`;
+            Utilities.showElement(gameResult);
+            Players.increasePlayerWins(activePlayerID);
+            Players.updatePlayerWinsDisplay(activePlayerID);
+            playerSection1.classList.remove('active-player');
+            playerSection2.classList.remove('active-player');
+            gameOngoing = false;
+
+            const winningLineCoordinates = Gameboard.checkForWin().line;
+
+            winningLineCoordinates.forEach((winningCellCoordinates) => {
+                const winningCellRow = winningCellCoordinates[0];
+                const winningCellColumn = winningCellCoordinates[1];
+                document.querySelector(`[data-row="${winningCellRow + 1}"][data-column="${winningCellColumn + 1}"]`).classList.add('winning-cell');
+            });
+        }
+
+        const onDrawCondition = () => {
+            gameResult.textContent = 'It is a draw!';
+            Utilities.showElement(gameResult);
+            playerSection1.classList.remove('active-player');
+            playerSection2.classList.remove('active-player');
+            gameOngoing = false;
+        };
+
         const onCellClick = (event) => {
             const cell = event.target;
 
@@ -339,23 +376,13 @@ const Game = (() => {
                 cell.setAttribute('data-checked', Players.getPlayerSymbol(activePlayerID));
                 Gameboard.makeMove(getPlayerMove(cell), Players.getPlayerSymbol(activePlayerID));
 
-                if (Gameboard.checkForWin()) {
-                    gameResult.textContent = `${Players.getPlayerName(activePlayerID)} wins!`;
-                    Utilities.showElement(gameResult);
-                    Players.increasePlayerWins(activePlayerID);
-                    Players.updatePlayerWinsDisplay(activePlayerID);
-                    playerSection1.classList.remove('active-player');
-                    playerSection2.classList.remove('active-player');
-                    gameOngoing = false;
+                if (Gameboard.checkForWin().won) {
+                    onWinCondition();
                     return;
                 }
         
                 if (turnCounter() === turnLimit && gameOngoing) {
-                    gameResult.textContent = 'It is a draw!';
-                    Utilities.showElement(gameResult);
-                    playerSection1.classList.remove('active-player');
-                    playerSection2.classList.remove('active-player');
-                    gameOngoing = false;
+                    onDrawCondition();
                     return;
                 }
         
@@ -404,7 +431,7 @@ const Game = (() => {
     newRoundBtn.addEventListener('click', () => {
         createBoardFromGridsizeSelect();
         gameOngoing = false;
-        
+
         Utilities.hideElement(gameResult);
         Utilities.disableElement(newRoundBtn);
         Utilities.enableElement(gridsizeSelect);
