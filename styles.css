@@ -81,7 +81,7 @@ main {
 }
 
 .gameboard-cell {
-  border: 1px solid black;
+  border: 2px solid var(--blue-dark);
 }
 
 .gameboard-wrapper {
@@ -93,11 +93,11 @@ main {
 }
 
 .gameboard-cell[data-checked="x"] {
-  background-color: black;
+  background-image: url("icons/cross.svg");
 }
 
 .gameboard-cell[data-checked="o"] {
-  background-color: white;
+  background-image: url("icons/circle.svg");
 }
 
 .hidden {
